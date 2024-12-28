@@ -124,3 +124,105 @@ Missing Required Fields:
   ]
 }
 ```
+
+## User Login
+
+Endpoint for authenticating existing users.
+
+### Endpoint
+
+```
+POST /users/login
+```
+
+### Request Body
+
+```json
+{
+  "email": "string",
+  "password": "string"
+}
+```
+
+### Validation Rules
+
+- `email`: Valid email format required
+- `password`: Minimum 6 characters required
+
+### Response
+
+#### Success (200 OK)
+
+```json
+{
+  "token": "JWT_TOKEN_STRING",
+  "user": {
+    "username": {
+      "firstname": "string",
+      "lastname": "string"
+    },
+    "email": "string"
+  }
+}
+```
+
+#### Error (401 Unauthorized)
+
+```json
+{
+  "message": "Invalid email or password"
+}
+```
+
+#### Error (400 Bad Request)
+
+```json
+{
+  "errors": [
+    {
+      "msg": "Error message",
+      "param": "field_name",
+      "location": "body"
+    }
+  ]
+}
+```
+
+### Response Examples
+
+#### Success Example
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "username": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com"
+  }
+}
+```
+
+#### Error Examples
+
+Invalid Credentials:
+```json
+{
+  "message": "Invalid email or password"
+}
+```
+
+Invalid Email Format:
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid Email",
+      "param": "email",
+      "location": "body",
+      "value": "invalid-email"
+    }
+  ]
+}
+```
