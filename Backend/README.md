@@ -278,3 +278,60 @@ GET /users/logout
 {
   "message": "Authentication failed" 
 }
+
+// ...existing code...
+
+## Pilot Routes
+
+### Pilot Registration
+
+Register new pilot with vehicle details.
+
+#### Endpoint
+
+
+
+#### Request Body
+```json
+{
+  "fullname": {
+    "firstname": "string",
+    "lastname": "string"
+  },
+  "email": "string",
+  "password": "string",
+  "vehicle": {
+    "color": "string",
+    "plate": "string",
+    "capacity": "number",
+    "vehicleType": "string"
+  }
+}
+
+
+{
+  "token": "JWT_TOKEN_STRING",
+  "pilot": {
+    "username": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "pilot@example.com",
+    "vehicle": {
+      "color": "Black",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "Sedan"
+    }
+  }
+}
+
+{
+  "errors": [
+    {
+      "msg": "Vehicle type must be 3 characters long",
+      "param": "vehicle.vehicleType",
+      "location": "body"
+    }
+  ]
+}

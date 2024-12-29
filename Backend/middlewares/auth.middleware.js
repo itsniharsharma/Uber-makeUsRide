@@ -10,6 +10,8 @@ Middleware works between the routes and controllers.*/
 const userModel = require('../models/user.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const blacklistTokenModel = require('../models/blacklistToken.model');
+const pilotModel = require('../models/pilot.model');
 
 module.exports.authUser = async (req, res, next) => {
     try {
@@ -29,7 +31,7 @@ If no, the customer is allowed to proceed into the restaurant.
             return res.status(401).json({ message: 'Authentication failed' });
         }
 
-        const blacklisted = await userModel.findOne({token: token});
+        const blacklisted = await blacklistTokenModel.findOne({token: token});
 
         if(blacklisted){
             return res.status(401).json({ message: 'Authentication failed' });
@@ -39,6 +41,30 @@ If no, the customer is allowed to proceed into the restaurant.
         const user = await userModel.findById(decoded._id);
         req.user = user;
         next();
+
+    } catch (error) {
+        res.status(401).json({ message: 'Authentication failed' });
+    }
+}
+
+
+module.exports.authPilot = async (req, res, next) => {
+    try {
+        const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+        if(!token) {
+            return res.status(401).json({ message: 'Authentication failed' });
+        }
+
+        const blacklisted = await blacklistTokenModel.findOne({token: token});
+
+        if(blacklisted){
+            return res.status(401).json({ message: 'Authentication failed' });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const pilot = await pilotModel.findById(decoded._id);
+        req.pilot = pilot;
+        return next();
 
     } catch (error) {
         res.status(401).json({ message: 'Authentication failed' });

@@ -11,7 +11,6 @@ After refining and validating the request, it passes the refined, secure instruc
 const userModel = require('../models/user.model'); 
 const UserService = require('../services/user.service');
 const { validationResult } = require('express-validator');
-const BlacklistTokenModel = require('../models/blacklistToken.model');
 const blacklistTokenModel = require('../models/blacklistToken.model');
 
 //created a route to register user
@@ -32,14 +31,24 @@ module.exports.registerUser = async (req, res, next) => {
 
      const hashedPassword = await userModel.hashPassword(password);
 
-     const user = new userModel({
-            username: {
-                firstname,
-                lastname,
-            },
-            email,
-            password: hashedPassword,
-     });
+    //  const user = await UserService.createUser({
+    //         firstname:fullname.firstname,
+    //         lastname:fullname.lastname,
+    //         email,
+    //         password: hashedPassword,
+    //  });
+
+    const user = new userModel({
+        fullname: {
+            firstname: fullname.firstname,
+            lastname: fullname.lastname,
+        },
+
+        email: email.toLowerCase(),
+        password: hashedPassword,
+    });
+
+    // await user.save();
 
      const token = user.generateAuthToken();
 
@@ -61,12 +70,14 @@ module.exports.loginUser = async (req, res, next) => {
     const {email, password} = req.body;
 
     const user = await userModel.findOne({email}).select('+password');
+    console.log('user found', user);
 
     if(!user){
         return res.status(401).json({message: 'Invalid email or password'});
     }
 
     const isMatch = await user.comparePassword(password);
+    console.log('isMatch', isMatch);
 
     if(!isMatch){
         return res.status(401).json({message: 'Invalid email or password'});
@@ -89,3 +100,4 @@ module.exports.logoutUser = async (req, res, next) => {
     await blacklistTokenModel.create({token});
     res.status(200).json({message: 'Logged out successfully'});
 }
+
