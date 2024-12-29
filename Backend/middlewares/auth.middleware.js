@@ -13,11 +13,28 @@ const jwt = require('jsonwebtoken');
 
 module.exports.authUser = async (req, res, next) => {
     try {
-        
-        const token = req.cookies.token || req.headers.authorization.split(' ')[1];
+
+        /**
+Customer arrives at the restaurant (makes a request).
+Security guard (middleware) checks for the customer's badge (token) in their wallet (cookies) or hand (headers).
+If the customer doesn’t have a badge, they are turned away.
+If the customer has a badge, the guard checks whether it’s on the blacklist:
+If yes, the customer is still turned away.
+If no, the customer is allowed to proceed into the restaurant.
+
+         */
+
+        const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
         if(!token) {
             return res.status(401).json({ message: 'Authentication failed' });
         }
+
+        const blacklisted = await userModel.findOne({token: token});
+
+        if(blacklisted){
+            return res.status(401).json({ message: 'Authentication failed' });
+        } //here is checking if imposter enter, get him kick out of the restaurant
+
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await userModel.findById(decoded._id);
         req.user = user;

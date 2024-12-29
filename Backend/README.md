@@ -226,3 +226,55 @@ Invalid Email Format:
   ]
 }
 ```
+// ...existing code...
+
+## Get User Profile
+
+Endpoint for retrieving authenticated user's profile.
+
+### Endpoint
+
+### Authorization
+
+Requires JWT token in:
+- Cookie named 'token' OR
+- Authorization header as 'Bearer <token>'
+
+### Response
+
+#### Success (200 OK)
+
+```json
+{
+  "user": {
+    "username": {
+      "firstname": "string",
+      "lastname": "string"
+    },
+    "email": "string"
+  }
+}
+
+{
+  "message": "Authentication failed"
+}
+
+{
+  "user": {
+    "username": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com"
+  }
+}
+
+GET /users/logout
+
+{
+  "message": "Logged out successfully"
+}
+
+{
+  "message": "Authentication failed" 
+}
